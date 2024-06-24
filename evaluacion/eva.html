@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/hoja.css">
+    <title>Evaluacion</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>
+                <img src="img/certus.png" width="180" height="60" alt="">
+            </td>
+            <td style="text-align: right;">www.cerus.edu.pe</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td colspan="2">
+                <img src="img/banner-tecnologia.jpg" width="100%" alt="">
+            </td>
+        </tr>
+        <tr>
+            <td>Lenguajes para el Desarrollo de Sistemas</td>
+            <td style="text-align:right;">
+                <img src="img/acceso.png" alt="">
+            </td>
+        </tr>
+    </table>
+    <h1 style="text-align:center;">PROMEDIO FINAL DE NOTAS</h1>
+
+    <table id="tablaNotas">
+        <tr>
+            <th>Nota 1</th>
+            <td>
+                <input type="number" min="0" max="20" id="nota1" onchange="actualizarNumero('nota1')">
+                <span id="numeroNota1" style="font-weight: bold; margin-left: 10px;"></span>
+            </td>
+        </tr>
+        <tr>
+            <th>Nota 2</th>
+            <td>
+                <input type="number" min="0" max="20" id="nota2" onchange="actualizarNumero('nota2')">
+                <span id="numeroNota2" style="font-weight: bold; margin-left: 10px;"></span>
+            </td>
+        </tr>
+        <tr>
+            <th>Nota 3</th>
+            <td>
+                <input type="number" min="0" max="20" id="nota3" onchange="actualizarNumero('nota3')">
+                <span id="numeroNota3" style="font-weight: bold; margin-left: 10px;"></span>
+            </td>
+        </tr>
+        <tr>
+            <th>Examen Final</th>
+            <td>
+                <input type="number" min="0" max="20" id="examenFinal" onchange="actualizarNumero('examenFinal')">
+                <span id="numeroExamenFinal" style="font-weight: bold; margin-left: 10px;"></span>
+            </td>
+        </tr>
+        <tr id="promedioPracticasRow" style="display: none;">
+            <th>Promedio de Prácticas</th>
+            <td id="promedioPracticas">0.00</td>
+        </tr>
+        <tr id="promedioFinalRow" style="display: none;">
+            <th>Promedio Final</th>
+            <td id="promedioFinal">0.00</td>
+        </tr>
+        <tr id="resultadoRow" style="display: none;">
+            <th>Resultado</th>
+            <td id="resultado" class="desaprobado">Desaprobado</td>
+        </tr>
+        <tr id="mensajeErrorRow" style="display: none;">
+            <td colspan="2" id="mensajeError" style="text-align: center; color: red; font-weight: bold;"></td>
+        </tr>
+    </table>
+    <div class="buttons">
+        <button onclick="calcularPromedios()">Calcular</button>
+        <button onclick="limpiarCampos()">Limpiar</button>
+        <button onclick="window.print()">Imprimir</button>
+    </div>
+    <script>
+        function actualizarNumero(idCampo) {
+            const valor = document.getElementById(idCampo).value;
+            const label = idCampo === 'examenFinal' ? 'Examen Final' : 'Nota ' + idCampo.charAt(idCampo.length - 1);
+            document.getElementById('numero' + idCampo.charAt(idCampo.length - 1)).innerText = label + ': ' + valor;
+        }
+
+        function calcularPromedios() {
+            const nota1 = parseFloat(document.getElementById('nota1').value) || 0;
+            const nota2 = parseFloat(document.getElementById('nota2').value) || 0;
+            const nota3 = parseFloat(document.getElementById('nota3').value) || 0;
+            const examenFinal = parseFloat(document.getElementById('examenFinal').value) || 0;
+
+            // Verificar si alguna nota es mayor a 20
+            if (nota1 > 20 || nota2 > 20 || nota3 > 20 || examenFinal > 20) {
+                mostrarMensajeError('Notas no válidas. Ingrese valores entre 0 y 20.');
+                ocultarResultados();
+                return;
+            }
+
+            const promedioPracticas = (nota1 + nota2 + nota3) / 3;
+            const promedioFinal = (promedioPracticas + 2 * examenFinal) / 3;
+
+            document.getElementById('promedioPracticas').innerText = promedioPracticas.toFixed(2);
+            document.getElementById('promedioFinal').innerText = promedioFinal.toFixed(2);
+
+            const resultado = document.getElementById('resultado');
+            if (promedioFinal >= 12) {
+                resultado.innerText = 'Aprobado';
+                resultado.classList.add('aprobado');
+                resultado.classList.remove('desaprobado');
+            } else {
+                resultado.innerText = 'Desaprobado';
+                resultado.classList.add('desaprobado');
+                resultado.classList.remove('aprobado');
+            }
+
+            mostrarResultados();
+        }
+
+        function limpiarCampos() {
+            document.getElementById('nota1').value = '';
+            document.getElementById('nota2').value = '';
+            document.getElementById('nota3').value = '';
+            document.getElementById('examenFinal').value = '';
+            document.getElementById('promedioPracticas').innerText = '0.00';
+            document.getElementById('promedioFinal').innerText = '0.00';
+            document.getElementById('resultado').innerText = 'Desaprobado';
+            ocultarResultados();
+        }
+
+        function mostrarMensajeError(mensaje) {
+            document.getElementById('mensajeError').innerText = mensaje;
+            document.getElementById('mensajeErrorRow').style.display = 'table-row';
+        }
+
+        function ocultarMensajeError() {
+            document.getElementById('mensajeError').innerText = '';
+            document.getElementById('mensajeErrorRow').style.display = 'none';
+        }
+
+        function ocultarResultados() {
+            document.getElementById('promedioPracticasRow').style.display = 'none';
+            document.getElementById('promedioFinalRow').style.display = 'none';
+            document.getElementById('resultadoRow').style.display = 'none';
+        }
+
+        function mostrarResultados() {
+            ocultarMensajeError();
+            document.getElementById('promedioPracticasRow').style.display = 'table-row';
+            document.getElementById('promedioFinalRow').style.display = 'table-row';
+            document.getElementById('resultadoRow').style.display = 'table-row';
+        }
+    </script>
+    <footer> 
+        AUTOR: MERY MOLINA ACUÑA 
+    </footer>
+</body>
+</html>
